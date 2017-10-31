@@ -57,10 +57,6 @@ public class MainActivity extends AppCompatActivity {
         // RT database 생성
         database = FirebaseDatabase.getInstance();
         userRef = database.getReference("users");
-
-        // 호출이 되는 순간 Token 값이 호출
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.e("MSG", "token = " + refreshedToken);
     }
 
     @Override
@@ -128,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
                             // DB 에 Token 추가
                             String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+                            Log.e("MSG", "token = " + refreshedToken);
                             // Module  추가
                             userRef.child(user.getUid()).setValue(refreshedToken);
 
