@@ -174,9 +174,16 @@ public class StorageActivity extends AppCompatActivity implements UserAdapter.Ca
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // Get a URL to the uploaded content
+                        // FIle Upload 를 했을 경우
+                        // 바로 Download Uri 를 가져올 수 있다.
                         Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                        fileLoad(fileName);
+
+                        Glide.with(getBaseContext())
+                                .load(downloadUrl)
+                                .into(imageView);
+                        
+                        // File Download
+                        //fileLoad(fileName);
                         Log.e("StorageActivity", downloadUrl.getPath());
                     }
                 })
