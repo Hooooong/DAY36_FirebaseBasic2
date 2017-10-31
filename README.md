@@ -51,7 +51,7 @@ ____________________________________________________
                      if (task.isSuccessful()) {
                         // User 생성 완료되었으면 실행
                         // User 생성이 완료되면
-                        // mAuth.getCurrentUser() 에 마지막으로 Sign Np 한 정보가 들어가 있다.
+                        // mAuth.getCurrentUser() 에 마지막으로 Sign Up 한 정보가 들어가 있다.
                      } else {
                        // User 생성 실패하였으면 실행
                      }
@@ -176,7 +176,7 @@ ____________________________________________________
   //    taskSnapshot.getDownloadUrl() 를 호출하면 가져와진다.
   //
   // 2. 직접적으로 File Node 를 탐색하여 가져오는 경우
-  //    getDownloadUrl() 메소드를 사용하여 rui 를 가져온다.
+  //    getDownloadUrl() 메소드를 사용하여 uri 를 가져온다.
   private void fileLoad(String fileName){
       FirebaseStorage.getInstance().getReference().child("files/"+fileName).getDownloadUrl()
               .addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -191,3 +191,113 @@ ____________________________________________________
       });
   }
   ```
+
+##### __Firebase Cloud Messaging__
+
+- Firebase Cloud Messaging 란?
+
+  > Firebase 클라우드 메시징(FCM)은 무료로 메시지를 안정적으로 전송할 수 있는 교차 플랫폼 메시징 솔루션이다. FCM을 사용하면 새 이메일이나 기타 데이터를 동기화할 수 있음을 클라이언트 앱에 알릴 수 있고, 알림 메시지를 전송하여 사용자를 유지하고 재참여를 유도할 수 있다. 채팅 메시지와 같은 사용 사례에서는 메시지로 최대 4KB의 페이로드를 클라이언트 앱에 전송할 수 있다.
+
+- Firebase Cloud Messaging 사용 방법
+
+  - Gradle 설정 : [FCM](https://firebase.google.com/docs/cloud-messaging/android/client?hl=ko)
+
+      - Gradle 만 설정해줘도 Firebase Console 에서 보내는 Message 를 백그라운드에서 받을 수 있다.
+
+  - Manifast.xml 설정
+
+      - FirebaseMessagingService 확장 서비스 추가
+
+      > FirebaseMessagingService를 확장하는 서비스를 추가한다. 백그라운드에서 앱의 알림을 수신하는 것 외에 다른 방식으로 메시지를 처리하려는 경우에 필요하다. 포그라운드 앱의 알림 수신, 데이터 페이로드 수신, 업스트림 메시지 전송 등을 수행하려면 이 서비스를 확장해야 한다.
+
+      ```xml
+      <service
+          android:name=".MyFirebaseMessagingService">
+          <intent-filter>
+              <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+          </intent-filter>
+      </service>
+      ```
+
+      - FirebaseInstanceIdService 확장 서비스 추가
+
+      > 등록 토큰 생성, 순환, 업데이트를 처리하기 위해 FirebaseInstanceIdService를 확장하는 서비스를 추가한다. 특정 기기로 전송하거나 기기 그룹을 만드는 경우에 필요하다.
+
+      ```xml
+      <service
+          android:name=".MyFirebaseInstanceIDService">
+          <intent-filter>
+              <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+          </intent-filter>
+      </service>
+      ```
+
+  - Token 생성
+
+      > 특정 기기로 메시지를 보내려면 기기의 등록 토큰을 알아야 한다. 앱을 처음 시작할 때 FCM SDK에서 클라이언트 앱 인스턴스용 등록 토큰을 생성한다. 단일 기기를 타겟팅하거나 기기 그룹을 만들려면 FirebaseInstanceIdService를 확장하여 이 토큰에 액세스해야 한다. 토큰은 최초 시작 후에 회전될 수 있으므로 마지막으로 업데이트된 등록 토큰을 검색하는 것이 좋습니다.
+
+      - 앱에서 인스턴스 ID 삭제, 새 기기에서 앱 복원, 사용자가 앱 삭제/재설치, 사용자가 앱 데이터 소거 할 때 Token 값이 변경 될 수 있다.
+
+      ```java
+      // 기기별로 고유한 Token 을 얻을 수 있다.
+      String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+      ```
+
+  - Service 확장하기
+
+      - MyFirebaseMessagingService ( Token 이 새로 생성될 때 마다 `onTokenRefresh` 메소드가 실행 )
+
+      ```java
+      public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
+
+          private static final String TAG = "IDService";
+
+          // Token 이 새로 생성될 때 마다 onTokenRefresh 가 실행
+          @Override
+          public void onTokenRefresh() {
+              // Get updated InstanceID token.
+              String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+              Log.d(TAG, "Refreshed token: " + refreshedToken);
+
+              // Token 업데이트 작업
+              sendRegistrationToServer(refreshedToken);
+          }
+          // [END refresh_token]
+          private void sendRegistrationToServer(String token) {
+              // TODO: 여기서 토큰 값을 갱신해야 한다.
+          }
+      }
+      ```
+
+      - MyFirebaseInstanceIDService ( App 이 화면에 떠 있을 때 `onMessageReceived` 메소드가 실행  )
+
+      ```java
+      public class MyFirebaseMessagingService extends FirebaseMessagingService {
+
+        private static final String TAG = "MsgService";
+
+        /**
+         * 내 앱이 화면에 현재 떠있으면 Notification이 전송되었을 때 이 함수가 호출된다.
+         *
+         * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
+         */
+        // [START receive_message]
+        @Override
+        public void onMessageReceived(RemoteMessage remoteMessage) {
+            // TODO(developer): Handle FCM messages here.
+            // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
+            Log.d(TAG, "From: " + remoteMessage.getFrom());
+
+            if (remoteMessage.getData().size() > 0) {
+                Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+
+                // 여기서 notification 메세지를 받아 처리
+            }
+
+            if (remoteMessage.getNotification() != null) {
+                Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            }
+        }
+        // [END receive_message]
+      }
+      ```
