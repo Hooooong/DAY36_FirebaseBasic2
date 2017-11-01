@@ -9,14 +9,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".view.main.MainActivity" android:theme="@style/MainTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".StorageActivity"/>
+        <activity android:name=".view.signup.SignUpActivity" android:theme="@style/SignTheme" android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".view.signin.SignInActivity" android:theme="@style/SignTheme" android:windowSoftInputMode="adjustResize"/>
+
+        <activity android:name=".view.storage.StorageActivity"/>
 
         <!-- [START firebase_service] -->
         <service
@@ -26,6 +29,7 @@
             </intent-filter>
         </service>
         <!-- [END firebase_service] -->
+
         <!-- [START firebase_iid_service] -->
         <service
             android:name=".MyFirebaseInstanceIDService">
