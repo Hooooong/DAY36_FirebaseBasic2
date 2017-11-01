@@ -1,6 +1,6 @@
 Android Programing
 ----------------------------------------------------
-### 2017.10.31 29일차
+### 2017.10.31~11.01 29, 30일차
 
 #### 예제
 ____________________________________________________
@@ -198,7 +198,7 @@ ____________________________________________________
 
   > Firebase 클라우드 메시징(FCM)은 무료로 메시지를 안정적으로 전송할 수 있는 교차 플랫폼 메시징 솔루션이다. FCM을 사용하면 새 이메일이나 기타 데이터를 동기화할 수 있음을 클라이언트 앱에 알릴 수 있고, 알림 메시지를 전송하여 사용자를 유지하고 재참여를 유도할 수 있다. 채팅 메시지와 같은 사용 사례에서는 메시지로 최대 4KB의 페이로드를 클라이언트 앱에 전송할 수 있다.
 
-- Firebase Cloud Messaging 사용 방법
+- Firebase Cloud Messaging 기본 설정
 
   - Gradle 설정 : [FCM](https://firebase.google.com/docs/cloud-messaging/android/client?hl=ko)
 
@@ -234,7 +234,7 @@ ____________________________________________________
 
   - Token 생성
 
-      > 특정 기기로 메시지를 보내려면 기기의 등록 토큰을 알아야 한다. 앱을 처음 시작할 때 FCM SDK에서 클라이언트 앱 인스턴스용 등록 토큰을 생성한다. 단일 기기를 타겟팅하거나 기기 그룹을 만들려면 FirebaseInstanceIdService를 확장하여 이 토큰에 액세스해야 한다. 토큰은 최초 시작 후에 회전될 수 있으므로 마지막으로 업데이트된 등록 토큰을 검색하는 것이 좋습니다.
+      > 특정 기기로 메시지를 보내려면 기기의 등록 토큰을 알아야 한다. 앱을 처음 시작할 때 FCM SDK에서 클라이언트 앱 인스턴스용 등록 토큰을 생성한다. 단일 기기를 타겟팅하거나 기기 그룹을 만들려면 FirebaseInstanceIdService를 확장하여 이 토큰에 액세스해야 한다. 토큰은 최초 시작 후에 회전될 수 있으므로 마지막으로 업데이트된 등록 토큰을 검색하는 것이 좋다.
 
       - 앱에서 인스턴스 ID 삭제, 새 기기에서 앱 복원, 사용자가 앱 삭제/재설치, 사용자가 앱 데이터 소거 할 때 Token 값이 변경 될 수 있다.
 
@@ -301,3 +301,15 @@ ____________________________________________________
         // [END receive_message]
       }
       ```
+
+  - Firebase Cloud Messaging 메세지 보내기
+
+    1. FCM 홈페이지에서 보내기
+
+        ![FCM message](https://github.com/Hooooong/DAY36_FirebaseBasic2/blob/master/image/FCMmessage.PNG)
+
+        - https://console.firebase.google.com/project/ㅍ로젝트명/notification/compose 에서 다중, 단일 메세지를 보낼 수 있다.
+
+    2. 외부에서 보내기
+
+        - 참조 : [FCM Server Setting](https://github.com/Hooooong/DAY37_FCM-Setting)
