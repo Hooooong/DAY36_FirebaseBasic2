@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,8 +30,17 @@ import com.google.firebase.storage.UploadTask;
 import com.hooooong.firebasebasic2.model.User;
 import com.hooooong.firebasebasic2.util.RealPathUtil;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class StorageActivity extends AppCompatActivity implements UserAdapter.Callback {
 
@@ -39,10 +49,10 @@ public class StorageActivity extends AppCompatActivity implements UserAdapter.Ca
 
     private StorageReference mStorageRef;
 
-    private TextView textId, textToken;
+    private TextView textEmail, textToken;
     private RecyclerView recyclerView;
     private Button btnSend;
-    private EditText editText;
+    private EditText editMsg;
     private ImageView imageView;
 
     private UserAdapter userAdapter;
@@ -59,17 +69,18 @@ public class StorageActivity extends AppCompatActivity implements UserAdapter.Ca
     }
 
     private void initView() {
-        textId = findViewById(R.id.textId);
+        textEmail = findViewById(R.id.textEmail);
         textToken = findViewById(R.id.textToken);
         recyclerView = findViewById(R.id.recyclerView);
         btnSend = findViewById(R.id.btnSend);
-        editText = findViewById(R.id.editText);
+        editMsg = findViewById(R.id.editMsg);
         imageView = findViewById(R.id.imageView);
+
     }
 
 
     private void initAdapter() {
-        userAdapter =  new UserAdapter(this);
+        userAdapter = new UserAdapter(this);
         recyclerView.setAdapter(userAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -84,10 +95,8 @@ public class StorageActivity extends AppCompatActivity implements UserAdapter.Ca
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<User> userList = new ArrayList<>();
                 User user = null;
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    user = new User();
-                    user.setToken((String)snapshot.getValue());
-                    user.setId(snapshot.getKey());
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    user = snapshot.getValue(User.class);
                     userList.add(user);
                 }
 
@@ -101,26 +110,23 @@ public class StorageActivity extends AppCompatActivity implements UserAdapter.Ca
         });
     }
 
-    private void fileLoad(String fileName){
-        FirebaseStorage.getInstance().getReference().child("files/"+fileName).getDownloadUrl()
+    private void fileLoad(String fileName) {
+        FirebaseStorage.getInstance().getReference().child("files/" + fileName).getDownloadUrl()
                 .addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Glide.with(getBaseContext())
-                        .load(uri)
-                        .into(imageView);
-                // Got the download URL for 'users/me/profile.png'
-            }
-        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Glide.with(getBaseContext())
+                                .load(uri)
+                                .into(imageView);
+                        // Got the download URL for 'users/me/profile.png'
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle any errors
             }
         });
     }
-
-
-
 
     /**
      * File Explore 호출
@@ -168,7 +174,7 @@ public class StorageActivity extends AppCompatActivity implements UserAdapter.Ca
         String temp[] = realPath.split("/");
         final String fileName = temp[temp.length - 1];
         // FireBase Storage File Node
-        StorageReference riversRef = FirebaseStorage.getInstance().getReference().child("files/"+fileName);
+        StorageReference riversRef = FirebaseStorage.getInstance().getReference().child("files/" + fileName);
 
         riversRef.putFile(uri)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -181,7 +187,7 @@ public class StorageActivity extends AppCompatActivity implements UserAdapter.Ca
                         Glide.with(getBaseContext())
                                 .load(downloadUrl)
                                 .into(imageView);
-                        
+
                         // File Download
                         //fileLoad(fileName);
                         Log.e("StorageActivity", downloadUrl.getPath());
@@ -197,9 +203,64 @@ public class StorageActivity extends AppCompatActivity implements UserAdapter.Ca
                 });
     }
 
+    public void send(View view) {
+        String token = textToken.getText().toString();
+        String msg = editMsg.getText().toString();
+
+        if (token == null || "".equals(token)) {
+            Toast.makeText(this, "받는 사람을 선택하세요.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (msg == null || "".equals(msg)) {
+            Toast.makeText(this, "메세지를 입력하세요.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Body 설정
+        String json = "{\"to\": \"" + token + "\", \"msg\" : \"" + msg + "\"}";
+
+        // 1. node 서버에서 자체적으로 보내는 경우 text/plain
+        // RequestBody body = RequestBody.create(MediaType.parse("text/plain"), json);
+        RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
+
+        // Retrofit 설정
+        Retrofit retrofit = new Retrofit
+                                .Builder()
+                                .baseUrl("https://us-central1-fir-basic2-9db29.cloudfunctions.net/")
+                                .build();
+        // Interface 결합
+        IRetro service = retrofit.create(IRetro.class);
+
+        // Service 로 연결 준비
+        Call<ResponseBody> remote = service.sendNotification(body);
+        remote.enqueue(new Callback<ResponseBody>() {
+                           @Override
+                           public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                               if(response.isSuccessful()){
+                                   ResponseBody data = response.body();
+                                   try {
+                                       Toast.makeText(StorageActivity.this, data.string(), Toast.LENGTH_SHORT).show();
+                                   } catch (IOException e) {
+                                       e.printStackTrace();
+                                   }
+                               }
+                           }
+
+                           @Override
+                           public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                Log.e("Retro",t.getMessage());
+                           }
+                       }
+        );
+    }
+
     @Override
-    public void setUser(String id, String token) {
-        textId.setText(id);
+    public void setUser(String email, String token) {
+        textEmail.setText(email);
         textToken.setText(token);
+    }
+
+    public void signOut(View view){
+        FirebaseAuth.getInstance().signOut();
     }
 }
