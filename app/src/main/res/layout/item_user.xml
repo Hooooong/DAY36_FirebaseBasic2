@@ -2,16 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="5dp">
+    android:padding="5dp"
+    android:weightSum="2">
 
     <TextView
-        android:id="@+id/textId"
-        android:layout_width="match_parent"
+        android:id="@+id/textEmail"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="3dp"
         android:marqueeRepeatLimit="marquee_forever"
         android:lines="1"
         android:singleLine="true"
-        android:text="ID" />
+        android:layout_weight="1"
+        android:text="EMAIL" />
+
+    <TextView
+        android:id="@+id/textId"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:lines="1"
+        android:singleLine="true"
+        android:layout_weight="1"
+        android:text="ID"/>
 
 </LinearLayout>

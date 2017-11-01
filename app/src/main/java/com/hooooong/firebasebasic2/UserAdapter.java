@@ -36,6 +36,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         User user = userList.get(position);
         holder.setTextId(user.getId());
+        holder.setTextEmail(user.getEmail());
         /*holder.setTextToken(user.getToken());*/
         holder.setToekn(user.getToken());
     }
@@ -53,19 +54,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView textId/*, textToken*/;
+        private TextView textId, textEmail;
         private String token;
 
         ViewHolder(View itemView) {
             super(itemView);
             textId = itemView.findViewById(R.id.textId);
+            textEmail = itemView.findViewById(R.id.textEmail);
             //textToken = itemView.findViewById(R.id.textToken);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String id = textId.getText().toString();
-                    callback.setUser(id,token);
+                    callback.setUser(textEmail.getText().toString(),token);
                     Toast.makeText(v.getContext(), "ID : " + id +", Token : " + token, Toast.LENGTH_SHORT).show();
                 }
             });
@@ -74,6 +76,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         void setTextId(String id) {
             textId.setText(id);
 
+        }
+
+        void setTextEmail(String email){
+            textEmail.setText(email);
         }
 
         void setToekn(String token){
@@ -87,6 +93,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
 
     public interface Callback{
-        void setUser(String id, String token);
+        void setUser(String email, String token);
     }
 }

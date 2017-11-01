@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.hooooong.firebasebasic2.view.main.MainActivity;
 
 /**
  * Created by Android Hong on 2017-10-31.

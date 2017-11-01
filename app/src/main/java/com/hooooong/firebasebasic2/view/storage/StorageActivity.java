@@ -1,4 +1,4 @@
-package com.hooooong.firebasebasic2;
+package com.hooooong.firebasebasic2.view.storage;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -27,8 +27,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.hooooong.firebasebasic2.IRetro;
+import com.hooooong.firebasebasic2.R;
+import com.hooooong.firebasebasic2.UserAdapter;
 import com.hooooong.firebasebasic2.model.User;
 import com.hooooong.firebasebasic2.util.RealPathUtil;
+import com.hooooong.firebasebasic2.view.main.MainActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -226,7 +230,10 @@ public class StorageActivity extends AppCompatActivity implements UserAdapter.Ca
         // Retrofit 설정
         Retrofit retrofit = new Retrofit
                                 .Builder()
+                                // 1. Node 서버에서 자체적으로 보내는 경우 Node 서버 IP 와 PortNumber 로 보낸다.
+                                //.baseUrl("http://192.168.0.1/8090")
                                 .baseUrl("https://us-central1-fir-basic2-9db29.cloudfunctions.net/")
+
                                 .build();
         // Interface 결합
         IRetro service = retrofit.create(IRetro.class);
@@ -260,7 +267,16 @@ public class StorageActivity extends AppCompatActivity implements UserAdapter.Ca
         textToken.setText(token);
     }
 
+    /**
+     * 로그아웃
+     *
+     * @param view
+     */
     public void signOut(View view){
+        Toast.makeText(this, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show();
         FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(StorageActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
