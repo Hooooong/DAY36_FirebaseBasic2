@@ -224,16 +224,15 @@ public class StorageActivity extends AppCompatActivity implements UserAdapter.Ca
         String json = "{\"to\": \"" + token + "\", \"msg\" : \"" + msg + "\"}";
 
         // 1. node 서버에서 자체적으로 보내는 경우 text/plain
-        // RequestBody body = RequestBody.create(MediaType.parse("text/plain"), json);
-        RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
+        RequestBody body = RequestBody.create(MediaType.parse("text/plain"), json);
+        //RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
 
         // Retrofit 설정
         Retrofit retrofit = new Retrofit
                                 .Builder()
                                 // 1. Node 서버에서 자체적으로 보내는 경우 Node 서버 IP 와 PortNumber 로 보낸다.
-                                //.baseUrl("http://192.168.0.1/8090")
-                                .baseUrl("https://us-central1-fir-basic2-9db29.cloudfunctions.net/")
-
+                                .baseUrl("http://192.168.0.10/8090")
+                                //.baseUrl("https://us-central1-fir-basic2-9db29.cloudfunctions.net/")
                                 .build();
         // Interface 결합
         IRetro service = retrofit.create(IRetro.class);

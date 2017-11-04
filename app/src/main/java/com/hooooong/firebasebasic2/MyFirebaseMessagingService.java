@@ -4,7 +4,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -33,14 +32,37 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-
+            Log.e(TAG, "Message data payload: " + remoteMessage.getData());
             // 여기서 notification 메세지를 받아 처리
+
+            sendNotification(remoteMessage.getData().get("type"));
+
+           /* String type = "";
+            Map map = remoteMessage.getData();
+            if(map != null ){
+                type = map.get("type")!= null? (String)map.get("type") : "";
+            }
+            MediaPlayer player;
+
+            switch (type){
+                case "one":
+                    player = MediaPlayer.create(getBaseContext(), R.raw.kick2);
+                    break;
+                default:
+                    player = MediaPlayer.create(getBaseContext(), R.raw.laser);
+                    break;
+            }
+
+            player.setLooping(false);
+            player.start();*/
         }
 
         if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            Log.e(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
+
+
+
     }
     // [END receive_message]
 
@@ -57,14 +79,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 PendingIntent.FLAG_ONE_SHOT);
 
         String channelId = "DEFAULT CHANNEL";
-        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        Uri sound;
+        switch (messageBody){
+            case "one":
+                sound =  Uri.parse("android.resource://com.hooooong.firebasebasic2/" + R.raw.kick2);
+                break;
+            default:
+                sound =  Uri.parse("android.resource://com.hooooong.firebasebasic2/" + R.raw.laser);
+                break;
+        }
+
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.ic_launcher_background)
                         .setContentTitle("FCM Message")
                         .setContentText(messageBody)
                         .setAutoCancel(true)
-                        .setSound(defaultSoundUri)
+                        .setSound(sound)
                         .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =

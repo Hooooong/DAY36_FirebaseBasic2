@@ -19,7 +19,13 @@
         <activity android:name=".view.signup.SignUpActivity" android:theme="@style/SignTheme" android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".view.signin.SignInActivity" android:theme="@style/SignTheme" android:windowSoftInputMode="adjustResize"/>
 
-        <activity android:name=".view.storage.StorageActivity"/>
+        <activity android:name=".view.storage.StorageActivity">
+            <intent-filter>
+                <action android:name="NOTI_LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
 
         <!-- [START firebase_service] -->
         <service

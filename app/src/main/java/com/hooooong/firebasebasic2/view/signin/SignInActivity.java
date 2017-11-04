@@ -94,13 +94,13 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         editPassword = findViewById(R.id.editPassword);
         progressBar = findViewById(R.id.progressBar);
         btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn);
+        btnGoogleSignIn.setSize(SignInButton.SIZE_WIDE);
         btnGoogleSignIn.setOnClickListener(this);
-
-
         Intent intent = getIntent();
         if(intent != null){
             String email = intent.getStringExtra("EMAIL");
             editEmail.setText(email);
+            editPassword.requestFocus();
         }
     }
 
@@ -132,6 +132,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             FirebaseUser user = mAuth.getCurrentUser();
                             // 이메일 검증 확인
                             if (user.isEmailVerified()) {
+
                                 // DB 에 Token 추가
                                 String refreshedToken = FirebaseInstanceId.getInstance().getToken();
                                 Log.e("MSG", "token = " + refreshedToken);
@@ -141,8 +142,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
                                 // 다음 페이지로 이동
                                 Intent intent = new Intent(SignInActivity.this, StorageActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
-                                finish();
                             } else {
                                 // 이메일을 확인하셔야 됩니다.
                                 Toast.makeText(SignInActivity.this, "Email 을 검증해주시기 바랍니다.", Toast.LENGTH_SHORT).show();
@@ -242,9 +243,11 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             // Module  추가
                             userRef.child(user.getUid()).setValue(data);
 
+                            Log.e("refreshedToken", refreshedToken);
+
                             Intent intent = new Intent(SignInActivity.this, StorageActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
-                            finish();
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(SignInActivity.this, "Authentication failed.",Toast.LENGTH_SHORT).show();

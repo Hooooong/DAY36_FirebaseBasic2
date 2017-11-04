@@ -97,6 +97,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         editPassword = findViewById(R.id.editPassword);
         progressBar = findViewById(R.id.progressBar);
         btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn);
+        btnGoogleSignIn.setSize(SignInButton.SIZE_WIDE);
+
         btnGoogleSignIn.setOnClickListener(this);
     }
 
@@ -152,8 +154,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                                                 // SingIn Page 로 이동해야 한다.
                                                 Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
                                                 intent.putExtra("EMAIL", editEmail.getText().toString());
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                 startActivity(intent);
-                                                finish();
                                             } else {
                                                 Toast.makeText(SignUpActivity.this
                                                         , "이메일 발송에 실패하였습니다. 다시 시도해 주세요."
@@ -292,8 +294,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             userRef.child(user.getUid()).setValue(data);
 
                             Intent intent = new Intent(SignUpActivity.this, StorageActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
-                            finish();
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(SignUpActivity.this, "Authentication failed.",Toast.LENGTH_SHORT).show();
