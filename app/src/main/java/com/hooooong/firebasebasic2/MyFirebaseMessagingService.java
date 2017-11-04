@@ -22,7 +22,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * 내 앱이 화면에 현재 떠있으면 Notification이 전송되었을 때 이 함수가 호출된다.
      *
-     * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
+     * @param remoteMessage remoteMessage 에는 server 의 data 값이 들어오게 된다.
      */
     // [START receive_message]
     @Override
@@ -34,35 +34,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getData().size() > 0) {
             Log.e(TAG, "Message data payload: " + remoteMessage.getData());
             // 여기서 notification 메세지를 받아 처리
-
+            // getData() 는 Map 형식이기 때문에 key 값을 알아야 사용할 수 있다.
             sendNotification(remoteMessage.getData().get("type"));
-
-           /* String type = "";
-            Map map = remoteMessage.getData();
-            if(map != null ){
-                type = map.get("type")!= null? (String)map.get("type") : "";
-            }
-            MediaPlayer player;
-
-            switch (type){
-                case "one":
-                    player = MediaPlayer.create(getBaseContext(), R.raw.kick2);
-                    break;
-                default:
-                    player = MediaPlayer.create(getBaseContext(), R.raw.laser);
-                    break;
-            }
-
-            player.setLooping(false);
-            player.start();*/
         }
 
         if (remoteMessage.getNotification() != null) {
             Log.e(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
-
-
-
     }
     // [END receive_message]
 
