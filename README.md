@@ -308,7 +308,7 @@ ____________________________________________________
 
         ![FCM message](https://github.com/Hooooong/DAY36_FirebaseBasic2/blob/master/image/FCMmessage.PNG)
 
-        - https://console.firebase.google.com/project/로젝트명/notification/compose 에서 다중, 단일 메세지를 보낼 수 있다.
+        - https://console.firebase.google.com/project/프로젝트명/notification/compose 에서 다중, 단일 메세지를 보낼 수 있다.
 
     2. 외부에서 보내기
 
